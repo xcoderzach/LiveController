@@ -31,6 +31,7 @@ ControllerTest.prototype.testPOSTRoute = function() {
   Controller.post("/things", { postit: "posted" })
 } 
 
+
 ControllerTest.prototype.testPOSTRouteWithURLParams = function() {
   expectAsserts(2)
   var controller = new Controller("/things/:id", function(thing) {
@@ -41,3 +42,25 @@ ControllerTest.prototype.testPOSTRouteWithURLParams = function() {
   })
   Controller.post("/things/42", { postit: "posted" })
 } 
+
+ControllerTest.prototype.testPUTRoute = function() {
+  expectAsserts(1)
+  var controller = new Controller("/things", function(thing) {
+    thing.put(function(params) {
+      assertEquals("wrong params", "posted", params.postit)
+    })
+  })
+  Controller.put("/things", { postit: "posted" })
+}  
+
+ControllerTest.prototype.testDELETERoute = function() {
+  expectAsserts(1)
+  var controller = new Controller("/things", function(thing) {
+    thing.delete("/:id", function(params) {
+      assertEquals("wrong params", 42, params.id)
+    })
+  })
+  Controller.delete("/things/42")
+}  
+ 
+ 

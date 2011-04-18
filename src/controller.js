@@ -19,6 +19,7 @@ function merge(obj1, obj2) {
 }
 
 var Controller
+
 (function() {
 
 var routes = {}
@@ -72,6 +73,14 @@ Controller.get = function(url) {
 Controller.post = function(url, params) {
   matchRoute("post", url, params)
 } 
+
+Controller.put = function(url, params) {
+  matchRoute("put", url, params)
+} 
+
+Controller.delete = function(url) {
+  matchRoute("delete", url)
+}
  /**
   * from: https://github.com/senchalabs/connect/blob/master/lib/middleware/router.js
   */
