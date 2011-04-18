@@ -30,3 +30,14 @@ ControllerTest.prototype.testPOSTRoute = function() {
   })
   Controller.post("/things", { postit: "posted" })
 } 
+
+ControllerTest.prototype.testPOSTRouteWithURLParams = function() {
+  expectAsserts(2)
+  var controller = new Controller("/things/:id", function(thing) {
+    thing.post(function(params) {
+      assertEquals("wrong params", 42, params.id)
+      assertEquals("wrong params", "posted", params.postit)
+    })
+  })
+  Controller.post("/things/42", { postit: "posted" })
+} 
