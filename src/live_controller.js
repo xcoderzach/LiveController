@@ -1,6 +1,4 @@
 
-
-
 function zip(keys, values) {
   var zipped = {}
   for (var i = 0; i < keys.length; i++) {
