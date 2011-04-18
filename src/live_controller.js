@@ -52,33 +52,55 @@ Controller.prototype.registerRoute = function(method, route, callback) {
   })
 }
 
-function matchRoute(method, url, params) {
+function matchRoute(method, url, params, push) {
+  var obj
+    , matches
   params = params || {}
-  routes[method].forEach(function(obj) {
-    var matches = url.match(obj.regex)
+
+  for (var i = 0; i < routes[method].length; i++) {
+    obj = routes[method][i]
+    matches = url.match(obj.regex)
 
     if(matches) {
       merge(params, zip(obj.keys, matches.slice(1)))
+      if(push) {
+        window.history.pushState({method: method, params: params}, "", url)
+      }
       obj.callback(params)
+      return
     }
-  })
+  }
+}
+
+window.onPopState = function(event) {
+  var params = event.state.params
+    , method = event.state.method
+    , url = document.location.pathname
+
+  if(method === "get" || method === "delete") {
+    Controller[method](url, false)
+  }
+  if(method === "put" || method === "post") {
+    Controller[method](url, params, false)
+  }
 }
    
-Controller.get = function(url) {
-  matchRoute("get", url)
+Controller.get = function(url, push) {
+  matchRoute("get", url, push)
 }
 
-Controller.post = function(url, params) {
-  matchRoute("post", url, params)
+Controller.post = function(url, params, push) {
+  matchRoute("post", url, params, push)
 } 
 
-Controller.put = function(url, params) {
-  matchRoute("put", url, params)
+Controller.put = function(url, params, push) {
+  matchRoute("put", url, params, push)
 } 
 
-Controller.delete = function(url) {
-  matchRoute("delete", url)
+Controller.delete = function(url, push) {
+  matchRoute("delete", url, push)
 }
+
  /**
   * from: https://github.com/senchalabs/connect/blob/master/lib/middleware/router.js
   */

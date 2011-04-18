@@ -62,5 +62,24 @@ ControllerTest.prototype.testDELETERoute = function() {
   })
   Controller.delete("/things/42")
 }  
- 
- 
+
+ControllerTest.prototype.testTwoMatchingRoutes = function() {
+  expectAsserts(1)
+  var controller = new Controller("/things", function(thing) {
+    thing.get("/:id", function(params) {
+      assertEquals("wrong params", 42, params.id)
+    })
+
+    thing.get("/:cd", function(params) {
+      fail("should not be called")
+    }) 
+  })
+  Controller.get("/things/42")
+} 
+
+
+/**
+ *
+ * There should be tests for the pop/pushstate stuff but jstest driver doesn't test 
+ * urls correctly
+ **/
