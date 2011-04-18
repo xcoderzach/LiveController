@@ -76,3 +76,10 @@ ControllerTest.prototype.testTwoMatchingRoutes = function() {
   })
   Controller.get("/things/42")
 } 
+
+
+/**
+ *
+ * There should be tests for the pop/pushstate stuff but jstest driver doesn't test 
+ * urls correctly
+ **/
