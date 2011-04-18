@@ -53,15 +53,20 @@ Controller.prototype.registerRoute = function(method, route, callback) {
 }
 
 function matchRoute(method, url, params) {
+  var obj
+    , matches
   params = params || {}
-  routes[method].forEach(function(obj) {
-    var matches = url.match(obj.regex)
+
+  for (var i = 0; i < routes[method].length; i++) {
+    obj = routes[method][i]
+    matches = url.match(obj.regex)
 
     if(matches) {
       merge(params, zip(obj.keys, matches.slice(1)))
       obj.callback(params)
+      return
     }
-  })
+  }
 }
    
 Controller.get = function(url) {
