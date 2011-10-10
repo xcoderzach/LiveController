@@ -72,10 +72,10 @@ class Controller
       method = event.state.method
       url = document.location.pathname
 
-      if(method == "get" || method == "delete")
+      if method == "get" || method == "delete"
         this[method](url, false)
 
-      if(method == "put" || method == "post")
+      if method == "put" || method == "post" 
         this[method](url, params, false)
 
 window.Controller = Controller

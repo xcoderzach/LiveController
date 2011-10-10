@@ -78,6 +78,6 @@ ControllerTest.prototype.testTwoMatchingRoutes = function() {
 } 
 
 /**
- * There should be tests for the pop/pushstate stuff but jstest driver doesn't test 
+ * There should be tests for the pop/pushstate stuff but jstestdriver doesn't test 
  * urls correctly
  **/
