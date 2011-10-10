@@ -8,7 +8,7 @@ ControllerTest.prototype.testGETRoute = function() {
     })
   })
 
-  Controller.get("/things")
+  Router.get("/things")
 }
 
 ControllerTest.prototype.testGETRouteWithParams = function() {
@@ -18,7 +18,7 @@ ControllerTest.prototype.testGETRouteWithParams = function() {
       assertEquals("wrong params", 42, params.id)
     })
   })
-  Controller.get("/things/42")
+  Router.get("/things/42")
 } 
 
 ControllerTest.prototype.testPOSTRoute = function() {
@@ -28,7 +28,7 @@ ControllerTest.prototype.testPOSTRoute = function() {
       assertEquals("wrong params", "posted", params.postit)
     })
   })
-  Controller.post("/things", { postit: "posted" })
+  Router.post("/things", { postit: "posted" })
 } 
 
 
@@ -40,7 +40,7 @@ ControllerTest.prototype.testPOSTRouteWithURLParams = function() {
       assertEquals("wrong params", "posted", params.postit)
     })
   })
-  Controller.post("/things/42", { postit: "posted" })
+  Router.post("/things/42", { postit: "posted" })
 } 
 
 ControllerTest.prototype.testPUTRoute = function() {
@@ -50,7 +50,7 @@ ControllerTest.prototype.testPUTRoute = function() {
       assertEquals("wrong params", "posted", params.postit)
     })
   })
-  Controller.put("/things", { postit: "posted" })
+  Router.put("/things", { postit: "posted" })
 }  
 
 ControllerTest.prototype.testDELETERoute = function() {
@@ -60,7 +60,7 @@ ControllerTest.prototype.testDELETERoute = function() {
       assertEquals("wrong params", 42, params.id)
     })
   })
-  Controller.delete("/things/42")
+  Router.delete("/things/42")
 }  
 
 ControllerTest.prototype.testTwoMatchingRoutes = function() {
@@ -74,12 +74,10 @@ ControllerTest.prototype.testTwoMatchingRoutes = function() {
       fail("should not be called")
     }) 
   })
-  Controller.get("/things/42")
+  Router.get("/things/42")
 } 
 
-
 /**
- *
  * There should be tests for the pop/pushstate stuff but jstest driver doesn't test 
  * urls correctly
  **/
