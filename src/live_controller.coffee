@@ -30,7 +30,6 @@ normalizePath = (path, keys) ->
   return new RegExp('^' + path + '$', 'i');
 
 routes = {}
-filters = {before:[]}
 routeMethods = ["get", "post", "put", "delete"]
 
 matchRoute = (method, url, params, push) ->
@@ -43,34 +42,43 @@ matchRoute = (method, url, params, push) ->
     if matches
       merge params, zipObject(obj.keys, matches.slice(1))
 
-      _.each filters["before"], (filter) ->
+      _.each obj.filters.before, (filter) ->
         filter()
       
       obj.callback params
+
+      _.each obj.filters.after, (filter) ->
+        filter()
+
       if push
         window.history.pushState { method: method, params: params }, "", url
       return
 
-registerRoute = (method, route, callback) ->
+registerRoute = (method, route, filters, callback) ->
   keys = []
   routes[method].push { "regex": normalizePath(route, keys)
                       , "keys": keys
                       , "original": route
+                      , "filters": filters
                       , "callback": callback }
 
 class Controller
   constructor: (base, scope) ->
     router = {}
+    filters = {before:[], after:[]}
     routeMethods.forEach (method) ->
       routes[method] = []
       router[method] = (route, callback) ->
         if typeof route != "string"
           callback = route
           route = "" 
-        registerRoute method, base + route, callback
+        registerRoute method, base + route, filters, callback
         
     router.before = (filter) ->
       filters.before.push filter
+
+    router.after = (filter) ->
+      filters.after.push filter
 
     scope router
 

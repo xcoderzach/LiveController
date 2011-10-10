@@ -92,6 +92,21 @@ ControllerTest.prototype.testBeforeFilter = function() {
   Router.get("/things/42")
 } 
 
+ControllerTest.prototype.testAfterFilter = function() {
+  expectAsserts(2)
+  var controller = new Controller("/things", function(thing) {
+    var before = true
+    thing.after(function() {
+      assert("Should not be before", !before)
+    })
+    thing.get("/:id", function(params) {
+      before = false
+      assertEquals("wrong params", 42, params.id)
+    })
+  })
+  Router.get("/things/42")
+} 
+
 /**
  * There should be tests for the pop/pushstate stuff but jstestdriver doesn't test 
  * urls correctly
