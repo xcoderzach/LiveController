@@ -30,6 +30,7 @@ normalizePath = (path, keys) ->
   return new RegExp('^' + path + '$', 'i');
 
 routes = {}
+filters = {before:[]}
 routeMethods = ["get", "post", "put", "delete"]
 
 matchRoute = (method, url, params, push) ->
@@ -42,6 +43,9 @@ matchRoute = (method, url, params, push) ->
     if matches
       merge params, zipObject(obj.keys, matches.slice(1))
 
+      _.each filters["before"], (filter) ->
+        filter()
+      
       obj.callback params
       if push
         window.history.pushState { method: method, params: params }, "", url
@@ -65,6 +69,9 @@ class Controller
           route = "" 
         registerRoute method, base + route, callback
         
+    router.before = (filter) ->
+      filters.before.push filter
+
     scope router
 
     window.onPopState = (event) ->
