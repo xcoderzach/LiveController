@@ -42,13 +42,17 @@ matchRoute = (method, url, params, push) ->
     if matches
       merge params, zipObject(obj.keys, matches.slice(1))
 
+      stopRoute = false
       _.each obj.filters.before, (filter) ->
-        filter()
+        if !stopRoute && filter(params) == false
+          stopRoute = true
+      if stopRoute
+        return
       
       obj.callback params
 
       _.each obj.filters.after, (filter) ->
-        filter()
+        filter(params)
 
       if push
         window.history.pushState { method: method, params: params }, "", url
