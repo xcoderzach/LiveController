@@ -9,7 +9,6 @@ merge = _.extend
 
 # from: https://github.com/senchalabs/connect/blob/master/lib/middleware/router.js
 
-
 normalizePath = (path, keys) ->
 
   buildRegex  = (_, slash, format, key, capture, optional) ->
@@ -29,6 +28,12 @@ normalizePath = (path, keys) ->
              .replace(/\*/g, '(.+)');
   return new RegExp('^' + path + '$', 'i');
 
+
+getHelper = (url) ->
+  helperClassName = url.replace /^[a-zA-Z]|\/[a-zA-Z]/g, (x) -> x.toUpperCase()
+  helperClassName = helperClassName.replace(/\//g, "")+ "Helper"
+  return window[helperClassName]
+
 routes = {}
 routeMethods = ["get", "post", "put", "delete"]
 
@@ -40,22 +45,38 @@ matchRoute = (method, url, params, push) ->
     matches = url.match obj.regex
 
     if matches
-      merge params, zipObject(obj.keys, matches.slice(1))
 
-      stopRoute = false
-      _.each obj.filters.before, (filter) ->
-        if !stopRoute && filter(params) == false
-          stopRoute = true
-      if stopRoute
-        return
-      
-      obj.callback params
+      new LiveView "/views" + url + ".html", {}, (view) -> 
+        ctor = getHelper url
+        if ctor?
+          helper = new ctor(view)
+        else 
+          helper = () ->
+        merge params, zipObject(obj.keys, matches.slice(1))
+        methods = { 
+                    url: url,
+                    view: view, 
+                    autoRender: true
+                    helper: helper
+                  }
+        
+        stopRoute = false
+        _.each obj.filters.before, (filter) ->
+          if !stopRoute && filter.call(methods, params) == false
+            stopRoute = true
+        if stopRoute
+          return
 
-      _.each obj.filters.after, (filter) ->
-        filter(params)
+        obj.callback.call methods, params 
 
-      if push
-        window.history.pushState { method: method, params: params }, "", url
+        _.each obj.filters.after, (filter) ->
+          filter(params)
+
+        if push
+          $("body").attr("class", url.replace(/\//g, " ").trim())
+          window.history.pushState { method: method, params: params }, "", url
+        if(methods.autoRender)
+          $("#main").html(methods.view.context)
       return
 
 registerRoute = (method, route, filters, callback) ->
@@ -100,7 +121,7 @@ class Controller
 window.Controller = Controller
 window.Router = {
   get: (url, push) ->
-    matchRoute("get", url, push)
+    matchRoute("get", url, {}, push)
 
   post: (url, params, push) ->
     matchRoute("post", url, params, push)
@@ -109,5 +130,5 @@ window.Router = {
     matchRoute("put", url, params, push)
 
   delete: (url, push) ->
-    matchRoute("delete", url, push)
+    matchRoute("delete", url, {}, push)
 }
