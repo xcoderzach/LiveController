@@ -9,7 +9,6 @@ merge = _.extend
 
 # from: https://github.com/senchalabs/connect/blob/master/lib/middleware/router.js
 
-
 normalizePath = (path, keys) ->
 
   buildRegex  = (_, slash, format, key, capture, optional) ->
@@ -26,8 +25,23 @@ normalizePath = (path, keys) ->
              .replace(/\/\(/g, '(?:/')
              .replace( /(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, buildRegex)
              .replace(/([\/.])/g, '\\$1')
-             .replace(/\*/g, '(.+)');
-  return new RegExp('^' + path + '$', 'i');
+             .replace(/\*/g, '(.+)')
+  return new RegExp('^' + path + '$', 'i')
+
+
+getHelper = (url) ->
+  helperClassName = url.replace /^[a-zA-Z]|\/[a-zA-Z]/g, (x) -> x.toUpperCase()
+  helperClassName = helperClassName.replace(/\//g, "")+ "Helper"
+  return window[helperClassName]
+
+window.onpopstate = (event) ->
+  console.log("derp")
+  event ?= {}
+  state = event.state || {}
+  method = state.method || "get"
+  params = state.params || {}
+  Router[method](document.location.pathname, params) 
+
 
 routes = {}
 routeMethods = ["get", "post", "put", "delete"]
@@ -40,31 +54,66 @@ matchRoute = (method, url, params, push) ->
     matches = url.match obj.regex
 
     if matches
-      merge params, zipObject(obj.keys, matches.slice(1))
 
-      obj.callback params
-      if push
-        window.history.pushState { method: method, params: params }, "", url
+      new LiveView "/views" + url + ".html", {}, (view) -> 
+        ctor = getHelper url
+        if ctor?
+          helper = new ctor(view)
+        else 
+          helper = () ->
+        merge params, zipObject(obj.keys, matches.slice(1))
+        methods = { 
+                    url: url,
+                    view: view, 
+                    autoRender: true
+                    helper: helper
+                  }
+        
+        stopRoute = false
+        _.each obj.filters.before, (filter) ->
+          if !stopRoute && filter.call(methods, params) == false
+            stopRoute = true
+        if stopRoute
+          return
+
+        obj.callback.call methods, params 
+
+        _.each obj.filters.after, (filter) ->
+          filter(params)
+
+        if push
+          $("body").attr("class", url.replace(/\//g, " ").trim())
+          window.history.pushState { method: method, params: params }, "", url
+        if(methods.autoRender)
+          $("#main").html(methods.view.context)
       return
 
-registerRoute = (method, route, callback) ->
+registerRoute = (method, route, filters, callback) ->
   keys = []
   routes[method].push { "regex": normalizePath(route, keys)
                       , "keys": keys
                       , "original": route
+                      , "filters": filters
                       , "callback": callback }
 
 class Controller
   constructor: (base, scope) ->
     router = {}
+    filters = {before:[], after:[]}
     routeMethods.forEach (method) ->
       routes[method] = []
       router[method] = (route, callback) ->
         if typeof route != "string"
           callback = route
           route = "" 
-        registerRoute method, base + route, callback
+        registerRoute method, base + route, filters, callback
         
+    router.before = (filter) ->
+      filters.before.push filter
+
+    router.after = (filter) ->
+      filters.after.push filter
+
     scope router
 
     window.onPopState = (event) ->
@@ -81,7 +130,7 @@ class Controller
 window.Controller = Controller
 window.Router = {
   get: (url, push) ->
-    matchRoute("get", url, push)
+    matchRoute("get", url, {}, push)
 
   post: (url, params, push) ->
     matchRoute("post", url, params, push)
@@ -90,5 +139,5 @@ window.Router = {
     matchRoute("put", url, params, push)
 
   delete: (url, push) ->
-    matchRoute("delete", url, push)
+    matchRoute("delete", url, {}, push)
 }
