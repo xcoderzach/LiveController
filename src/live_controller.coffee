@@ -25,14 +25,23 @@ normalizePath = (path, keys) ->
              .replace(/\/\(/g, '(?:/')
              .replace( /(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, buildRegex)
              .replace(/([\/.])/g, '\\$1')
-             .replace(/\*/g, '(.+)');
-  return new RegExp('^' + path + '$', 'i');
+             .replace(/\*/g, '(.+)')
+  return new RegExp('^' + path + '$', 'i')
 
 
 getHelper = (url) ->
   helperClassName = url.replace /^[a-zA-Z]|\/[a-zA-Z]/g, (x) -> x.toUpperCase()
   helperClassName = helperClassName.replace(/\//g, "")+ "Helper"
   return window[helperClassName]
+
+window.onpopstate = (event) ->
+  console.log("derp")
+  event ?= {}
+  state = event.state || {}
+  method = state.method || "get"
+  params = state.params || {}
+  Router[method](document.location.pathname, params) 
+
 
 routes = {}
 routeMethods = ["get", "post", "put", "delete"]
