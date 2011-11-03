@@ -35,7 +35,6 @@ getHelper = (url) ->
   return window[helperClassName]
 
 window.onpopstate = (event) ->
-  console.log("derp")
   event ?= {}
   state = event.state || {}
   method = state.method || "get"
