@@ -41,7 +41,6 @@ window.onpopstate = (event) ->
   params = state.params || {}
   Router[method](document.location.pathname, params) 
 
-
 routes = {}
 routeMethods = ["get", "post", "put", "delete"]
 
@@ -51,7 +50,6 @@ matchRoute = (method, url, params, push) ->
   for i in [0...routes[method].length]
     obj = routes[method][i]
     matches = url.match obj.regex
-
     if matches
 
       new LiveView "/views" + url + ".html", {}, (view) -> 
@@ -100,7 +98,10 @@ class Controller
     router = {}
     filters = {before:[], after:[]}
     routeMethods.forEach (method) ->
-      routes[method] = []
+
+      if not _.isArray(routes[method]) 
+        routes[method] = []
+
       router[method] = (route, callback) ->
         if typeof route != "string"
           callback = route
