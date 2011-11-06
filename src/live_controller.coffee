@@ -28,7 +28,6 @@ normalizePath = (path, keys) ->
              .replace(/\*/g, '(.+)')
   return new RegExp('^' + path + '$', 'i')
 
-
 getHelper = (url) ->
   helperClassName = url.replace /^[a-zA-Z]|\/[a-zA-Z]/g, (x) -> x.toUpperCase()
   helperClassName = helperClassName.replace(/\//g, "")+ "Helper"
@@ -51,7 +50,6 @@ matchRoute = (method, url, params, push) ->
     obj = routes[method][i]
     matches = url.match obj.regex
     if matches
-
       new LiveView "/views" + url + ".html", {}, (view) -> 
         ctor = getHelper url
         if ctor?
@@ -73,6 +71,7 @@ matchRoute = (method, url, params, push) ->
         if stopRoute
           return
 
+        console.log(obj)
         obj.callback.call methods, params 
 
         _.each obj.filters.after, (filter) ->
