@@ -10,7 +10,7 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
 
   zipObject = (k, v) ->
     arr = _.zip(k, v)
-    red = (m, x)-> 
+    red = (m, x)->
       m[x[0]] = x[1]
       return m
     _.reduce(arr, red, {})
@@ -48,26 +48,25 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
     state = event.state || {}
     method = state.method || "get"
     params = state.params || {}
-    Router[method](document.location.pathname, params) 
+    Router[method](document.location.pathname, params)
 
   matchRoute = (method, url, params, push) ->
     params ?= {}
 
-    console.log routes
     for i in [0...routes[method].length]
       obj = routes[method][i]
       matches = url.match obj.regex
       if matches
-        new LiveView "/views" + url + ".html", {}, (view) -> 
+        new LiveView "/views" + url + ".html", {}, (view) ->
           ctor = getHelper url
           if ctor?
             helper = new ctor(view)
-          else 
+          else
             helper = () ->
           merge params, zipObject(obj.keys, matches.slice(1))
-          methods =  
+          methods =
             url: url,
-            view: view, 
+            view: view,
             autoRender: true
             helper: helper
           
@@ -78,8 +77,7 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
           if stopRoute
             return
 
-          console.log(obj)
-          obj.callback.call methods, params 
+          obj.callback.call methods, params
 
           _.each obj.filters.after, (filter) ->
             filter(params)
@@ -108,7 +106,7 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
       router[method] = (route, callback) ->
         if typeof route != "string"
           callback = route
-          route = "" 
+          route = ""
         registerRoute method, base + route, filters, callback
         
     router.before = (filter) ->
@@ -118,7 +116,6 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
       filters.after.push filter
 
     scope router
-    console.log routes
 
 
   exports = {}
