@@ -57,7 +57,7 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
       obj = routes[method][i]
       matches = url.match obj.regex
       if matches
-        new LiveView "/views" + url + ".html", {}, (view) ->
+        new LiveView "/templates" + url + ".html", {}, (view) ->
           ctor = getHelper url
           if ctor?
             helper = new ctor(view)
