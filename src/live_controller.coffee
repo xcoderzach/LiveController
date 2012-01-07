@@ -6,7 +6,7 @@ routes =
   
 routeMethods = ["get", "post", "put", "delete"]
 
-define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
+define ["jquery", "underscore"], ($, _) ->
 
   zipObject = (k, v) ->
     arr = _.zip(k, v)
@@ -57,37 +57,25 @@ define ["liveView", "jquery", "underscore"], (LiveView, $, _) ->
       obj = routes[method][i]
       matches = url.match obj.regex
       if matches
-        new LiveView "/templates" + url + ".html", {}, (view) ->
-          ctor = getHelper url
-          if ctor?
-            helper = new ctor(view)
-          else
-            helper = () ->
-          merge params, zipObject(obj.keys, matches.slice(1))
-          methods =
-            url: url,
-            view: view,
-            autoRender: true
-            helper: helper
-          
-          stopRoute = false
-          _.each obj.filters.before, (filter) ->
-            if !stopRoute && filter.call(methods, params) == false
-              stopRoute = true
-          if stopRoute
-            return
+        merge params, zipObject(obj.keys, matches.slice(1))
+        methods =
+          url: url
+        
+        stopRoute = false
+        _.each obj.filters.before, (filter) ->
+          if !stopRoute && filter.call(methods, params) == false
+            stopRoute = true
+        if stopRoute
+          return
 
-          obj.callback.call methods, params
+        obj.callback.call methods, params
 
-          _.each obj.filters.after, (filter) ->
-            filter(params)
+        _.each obj.filters.after, (filter) ->
+          filter(params)
 
-          if push
-            $("body").attr("class", url.replace(/\//g, " ").trim())
-            window.history.pushState { method: method, params: params }, "", url
-          if(methods.autoRender)
-            $("#main").html(methods.view.context)
-        return
+        if push
+          $("body").attr("class", url.replace(/\//g, " ").trim())
+          window.history.pushState { method: method, params: params }, "", url
 
   registerRoute = (method, route, filters, callback) ->
     keys = []
