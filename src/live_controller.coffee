@@ -38,11 +38,6 @@ define ["jquery", "underscore"], ($, _) ->
                .replace(/\*/g, '(.+)')
     return new RegExp('^' + path + '$', 'i')
 
-  getHelper = (url) ->
-    helperClassName = url.replace /^[a-zA-Z]|\/[a-zA-Z]/g, (x) -> x.toUpperCase()
-    helperClassName = helperClassName.replace(/\//g, "")+ "Helper"
-    return window[helperClassName]
-
   window.onpopstate = (event) ->
     event ?= {}
     state = event.state || {}
@@ -68,14 +63,14 @@ define ["jquery", "underscore"], ($, _) ->
         if stopRoute
           return
 
+        if push
+          $("body").attr("class", url.replace(/\//g, " ").trim())
+          window.history.pushState { method: method, params: params }, "", url
+
         obj.callback.call methods, params
 
         _.each obj.filters.after, (filter) ->
           filter(params)
-
-        if push
-          $("body").attr("class", url.replace(/\//g, " ").trim())
-          window.history.pushState { method: method, params: params }, "", url
 
   registerRoute = (method, route, filters, callback) ->
     keys = []
