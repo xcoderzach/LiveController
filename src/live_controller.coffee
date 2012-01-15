@@ -47,11 +47,12 @@ define ["jquery", "underscore"], ($, _) ->
 
   matchRoute = (method, url, params, push) ->
     params ?= {}
-
+    matched = false
     for i in [0...routes[method].length]
       obj = routes[method][i]
       matches = url.match obj.regex
       if matches
+        matched = true
         merge params, zipObject(obj.keys, matches.slice(1))
         methods =
           url: url
@@ -71,6 +72,8 @@ define ["jquery", "underscore"], ($, _) ->
 
         _.each obj.filters.after, (filter) ->
           filter(params)
+    if(!matched) 
+      throw new Error("404 Route not found")
 
   registerRoute = (method, route, filters, callback) ->
     keys = []
