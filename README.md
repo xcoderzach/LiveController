@@ -38,3 +38,9 @@ Live Controller v0.0.1
     Controller.put("/things/42", {"title: "w00t"})
 
     Controller.post("/things", {"title: "w00t"})
+
+### TODO before releasing this,
+  * Can we use something better by someone else?
+  * Get rid of http verbs, they dumb
+  * fallback for shitty browsers with #!
+  * Documentation
