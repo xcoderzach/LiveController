@@ -29,12 +29,18 @@ Live Controller v0.0.1
 
   And here's how you send invoke them
 
-    Controller.get("/things", {"title: "w00t"})
+    Controller.get("/things")
 
-    Controller.get("/things/12", {"title: "w00t"})
+    Controller.get("/things/12")
 
-    Controller.delete("/things/42", {"title: "w00t"})
+    Controller.delete("/things/42")
 
     Controller.put("/things/42", {"title: "w00t"})
 
     Controller.post("/things", {"title: "w00t"})
+
+### TODO before releasing this,
+  * Can we use something better by someone else?
+  * Get rid of http verbs, they dumb
+  * fallback for shitty browsers with #!
+  * Documentation
