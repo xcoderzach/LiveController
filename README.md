@@ -1,46 +1,102 @@
 Live Controller v0.0.1
-===============
+======================
 
-  Here's an example
+Table of Contents
+-----------------
+  * [Introduction](#introduction)
+  * [API docs](#api)
+  * [Experimental API docs](#experimental)
+  * [Examples](#examples)
+  * [Tests](#tests)
+  * [Contributing](#contributing)
+  * [Contributors](#contributors)
+  * [License](#license)
 
-    var controller = new Controller("/things", function(thing) {
+<a name="introduction"></a>
 
-      thing.get(function(params) {
+Introduction
+------------
 
-      }) 
+Live Controller is a tiny, client-side router that uses window.pushState and falls back to regular page refreshes when pushState is not available.
 
-      thing.get("/:id", function(params) {
+<a name="api"></a>
 
-      }) 
+API docs
+--------
 
-      thing.delete("/:id", function(params) {
+You can find the API docs in the docs folder.
 
-      })
+<a name="experimental"></a>
 
-      thing.put("/:id", function(params) {
+Experimental API docs
+---------------------
 
-      })
+Expelrimental API docs will be made available when any part of the project isn't experimental.
 
-      thing.post(function(params) {
+<a name="examples"></a>
 
-      })
+Examples
+--------
+
+###Here's an example
+
+  var controller = new Controller("/things", function(thing) {
+
+    thing.get(function(params) {
 
     }) 
 
-  And here's how you send invoke them
+    thing.get("/:id", function(params) {
 
-    Controller.get("/things")
+    }) 
 
-    Controller.get("/things/12")
+    thing.delete("/:id", function(params) {
 
-    Controller.delete("/things/42")
+    })
 
-    Controller.put("/things/42", {"title: "w00t"})
+    thing.put("/:id", function(params) {
 
-    Controller.post("/things", {"title: "w00t"})
+    })
+
+    thing.post(function(params) {
+
+    })
+
+  }) 
+
+###And here's how you send invoke them
+
+  Controller.get("/things")
+
+  Controller.get("/things/12")
+
+  Controller.delete("/things/42")
+
+  Controller.put("/things/42", {"title: "w00t"})
+
+  Controller.post("/things", {"title: "w00t"})
+
+Contributing
+------------
+
+Ideas, feature requests, bug reports, etc are very welcome.
 
 ### TODO before releasing this,
   * Can we use something better by someone else?
   * Get rid of http verbs, they dumb
   * fallback for shitty browsers with #!
-  * Documentation
+
+<a name="contributors"></a>
+
+Contributors
+------------
+
+  * Zach Smith @xcoderzach
+  * Eugene Butler @EButlerIV
+
+<a name = "license"></a>
+ 
+License
+-------
+
+MIT Licensed (see LICENSE.txt)
